@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
@@ -9,6 +11,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 const courses = [
   {
@@ -68,6 +71,9 @@ const courses = [
 ];
 
 function Header() {
+  //Hook to get the current user information from Clerk authentication
+  const { user } = useUser();
+
   return (
     <div className="p-4 max-w-7xl flex items-center justify-between w-full">
       <div className="flex gap-2 items-center">
@@ -82,7 +88,10 @@ function Header() {
             <NavigationMenuContent>
               <ul className="grid md:grid-cols-2 gap-2 sm:[400px] md:w-125 lg:w-150">
                 {courses.map((course, index) => (
-                  <div key={index} className="p-2 hover:bg-accent rounded-2xl cursor-pointer">
+                  <div
+                    key={index}
+                    className="p-2 hover:bg-accent rounded-2xl cursor-pointer"
+                  >
                     <h2 className="font-medium">{course.name}</h2>
                     <p className="text-xs text-gray-500">{course.desc}</p>
                   </div>
@@ -107,9 +116,20 @@ function Header() {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <Button className="font-game text-2xl" variant={"pixel"}>
-        Sign Up
-      </Button>
+      {!user ? (
+        <Link href={"/sign-in"}>
+          <Button className="font-game text-2xl" variant={"pixel"}>
+            Sign Up
+          </Button>
+        </Link>
+      ) : (
+        <div className="flex gap-4 items-center ">
+          <Button className="font-game text-2xl" variant={"pixel"}>
+            Dashboard
+          </Button>
+          <UserButton />
+        </div>
+      )}
     </div>
   );
 }
